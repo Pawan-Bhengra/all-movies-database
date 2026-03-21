@@ -1,7 +1,12 @@
 "use client";
 
+import {
+  sendNotification,
+  subscribeUser,
+  unsubscribeUser,
+} from "@/src/app/action";
 import { useState, useEffect } from "react";
-import { subscribeUser, unsubscribeUser, sendNotification } from "./actions";
+// import { subscribeUser, unsubscribeUser, sendNotification } from "./actions";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -23,13 +28,6 @@ export default function PushNotificationManager() {
   );
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      registerServiceWorker();
-    }
-  }, []);
-
   async function registerServiceWorker() {
     const registration = await navigator.serviceWorker.register("/sw.js", {
       scope: "/",
@@ -38,6 +36,13 @@ export default function PushNotificationManager() {
     const sub = await registration.pushManager.getSubscription();
     setSubscription(sub);
   }
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      setIsSupported(true);
+      registerServiceWorker();
+    }
+  }, []);
 
   async function subscribeToPush() {
     const registration = await navigator.serviceWorker.ready;
